@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        canvas {
+            padding-left: 0;
+            padding-right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            width: 800px;
+            height: 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" style="border: 1px solid black;" />
+    <script>
+
+        function ang2Rad(ang) {
+            return ang * (Math.PI / 180);
+        }
+
+        const Player = function (x, y) {
+            this.x = x;
+            this.y = y;
+            this.g = 40;
+            this.a = 0;
+            this.s = 6;
+            this.clockWise = true;
+            this.update = function () {
+                if (keys.left && !keys.right) {
+                    this.clockWise = false;
+                }
+                if (keys.right && !keys.left) {
+                    this.clockWise = true;
+                }
+
+                if (!pause) this.a += this.clockWise ? this.s % 360 : -this.s % 360;
+            };
+            this.draw = function () {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(ang2Rad(this.a));
+                ctx.fillStyle = "rgb(0,0,255)";
+                ctx.translate(-this.x, -this.y);
+                ctx.fillRect(this.x - 10, this.y - this.g - 5, 20, 10);
+                ctx.fillRect(this.x - 10, this.y + this.g - 5, 20, 10);
+                //ctx.fillRect(this.x - 3, this.y - 3, 6, 6);
+                ctx.restore();
+            };
+        }
+
+        const Block = function () {
+            this.x = c.width;
+            this.s = Math.random() * 3 + 1;
+            this.h = Math.random() * 10 + 5;
+            this.w = Math.random() * 20 + 10;
+            this.y = Math.random() * (c.height - this.h);
+            this.update = function () {
+                if (!pause) this.x -= 1;
+
+                // check for hit underneath
+                var data = ctx.getImageData(this.x, this.y, this.w, this.h);
+
+                var hit = false;
+                for (var i = 0; i < data.data.length; i += 4) {
+                    if (data.data[i] == 0 && data.data[i + 1] == 0 && data.data[i + 2] == 255) {
+                        console.log("HIT YO!!!");
+                        hit = true;
+                    }
+                }
+                pause = hit;
+
+
+
+            };
+            this.draw = function () {
+                ctx.fillStyle = "Red";
+                ctx.fillRect(this.x, this.y, this.w, this.h);
+            };
+        }
+
+        
+
+        function kDown(e) {
+            if (e.code == "ArrowLeft") {
+                keys.left = true;
+            }
+            if (e.code == "ArrowRight") {
+                keys.right = true;
+            }
+
+
+            var audioCtx = new AudioContext();
+            var o = audioCtx.createOscillator();
+            o.type = "square";
+            o.frequency.value = 161.6;
+            var g = audioCtx.createGain();
+            g.gain.exponentialRampToValueAtTime(0.00001, 0.2);
+            o.connect(g);
+            g.connect(audioCtx.destination);
+            o.start(0);
+
+            pause = false;
+        }
+
+        function kUp(e) {
+            if (e.code == "ArrowLeft")
+                keys.left = false;
+            if (e.code == "ArrowRight")
+                keys.right = false;
+            
+
+        }
+
+        window.onload = function () {
+
+            
+
+            pause = false;
+            console.log("Window Loaded");
+            c = document.getElementById("canvas");
+            ctx = c.getContext("2d");
+            p = new Player(50, c.height / 2);
+            keys = { left: false, right: false };
+            document.addEventListener('keydown', kDown);
+            document.addEventListener('keyup', kUp);
+
+            b = new Block();
+            setInterval(update, 1000 / 30);
+        }
+
+        function update() {
+            ctx.fillStyle = "Black";
+            ctx.fillRect(0, 0, c.width, c.height);
+            p.update();
+            p.draw();
+            b.update();
+            b.draw();
+        }
+    </script>
+</body>
+
+</html>
