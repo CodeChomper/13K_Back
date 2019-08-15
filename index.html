@@ -63,9 +63,25 @@
             this.h = Math.random() * 10 + 5;
             this.w = Math.random() * 20 + 10;
             this.y = Math.random() * (c.height - this.h);
+            
             this.update = function () {
                 if (!pause) this.x -= 1;
-
+                
+                if(this.x + this.w < 0){
+                    this.x = c.width;
+                    this.s = Math.random() * 3 + 1;
+                    this.h = Math.random() * 10 + 5;
+                    this.w = Math.random() * 20 + 10;
+                    this.y = Math.random() * (c.height - this.h);
+                }
+            };
+            
+            this.draw = function () {
+                ctx.fillStyle = "Red";
+                ctx.fillRect(this.x, this.y, this.w, this.h);
+            };
+            
+            this.checkCollision = function(){
                 // check for hit underneath
                 var data = ctx.getImageData(this.x, this.y, this.w, this.h);
 
@@ -76,14 +92,7 @@
                         hit = true;
                     }
                 }
-                pause = hit;
-
-
-
-            };
-            this.draw = function () {
-                ctx.fillStyle = "Red";
-                ctx.fillRect(this.x, this.y, this.w, this.h);
+                return hit;
             };
         }
 
@@ -98,15 +107,15 @@
             }
 
 
-            var audioCtx = new AudioContext();
-            var o = audioCtx.createOscillator();
-            o.type = "square";
-            o.frequency.value = 161.6;
-            var g = audioCtx.createGain();
-            g.gain.exponentialRampToValueAtTime(0.00001, 0.2);
-            o.connect(g);
-            g.connect(audioCtx.destination);
-            o.start(0);
+            //var audioCtx = new AudioContext();
+            //var o = audioCtx.createOscillator();
+            //o.type = "square";
+            //o.frequency.value = 161.6;
+            //var g = audioCtx.createGain();
+            //g.gain.exponentialRampToValueAtTime(0.00001, 0.2);
+            //o.connect(g);
+            //g.connect(audioCtx.destination);
+            //o.start(0);
 
             pause = false;
         }
@@ -133,17 +142,27 @@
             document.addEventListener('keydown', kDown);
             document.addEventListener('keyup', kUp);
 
-            b = new Block();
+            b = [new Block(), new Block];
             setInterval(update, 1000 / 30);
         }
 
         function update() {
+            pause = false;
             ctx.fillStyle = "Black";
             ctx.fillRect(0, 0, c.width, c.height);
             p.update();
             p.draw();
-            b.update();
-            b.draw();
+            for(var i=0; i<b.length; i++){
+                
+                if(b[i].checkCollision()){
+                    pause = true;
+                    
+                }
+                b[i].update();
+                b[i].draw();    
+            }
+            
+            
         }
     </script>
 </body>
