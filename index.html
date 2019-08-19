@@ -71,17 +71,19 @@
         }
 
         const Block = function (maxSpeed) {
-            this.x = c.width;
+            
             this.maxSpeed = maxSpeed;
             this.s = Math.random() * maxSpeed + 1;
             this.h = Math.random() * 10 + 5;
             this.w = Math.random() * 20 + 10;
+            this.x = c.width + 2* this.w * level;
             this.y = Math.random() * (c.height - this.h);
             
             this.update = function () {
                 if (!pause) this.x -= this.s;
                 
                 if(this.x + this.w < 0){
+                    score++;
                     this.x = c.width;
                     this.s = Math.random() * this.maxSpeed + 1;
                     this.h = Math.random() * 10 + 5;
@@ -162,11 +164,11 @@
         }
         
         function startGame(){
-            level = 1;
+            
             score = 0;
             b = [];
             for(var i=0; i<level; i++){
-                b.push(new Block(level*3));
+                b.push(new Block(level*1.2));
             }
         }
 
@@ -179,8 +181,15 @@
                     ctx.fillText("Click to Start",120, 100);
                     break;
                 case 1:
+                    //Go up a level
+                    if(score > level * 3){
+                        level++;
+                        startGame();
+                    }
                     ctx.fillStyle = "Black";
                     ctx.fillRect(0, 0, c.width, c.height);
+                    ctx.fillStyle = "White";
+                    ctx.fillText("Score: " + score, 10,20);
                     p.update();
                     p.draw();
                     for(var i=0; i<b.length; i++){
