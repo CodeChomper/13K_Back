@@ -16,11 +16,24 @@
             width: 800px;
             height: 400px;
         }
+        #ins{
+            text-align: center;
+            color: Red;
+        }
     </style>
 </head>
 
 <body>
+    <br/>
+    <div id=ins>
+        <h3>
+        Use left and right arrows to rotate forward and BACK-wards to avoid the blocks.
+    </h3>
+            </div>
+    
     <canvas id="canvas" style="border: 1px solid black;" />
+    
+    
     <script>
 
         function ang2Rad(ang) {
@@ -57,19 +70,20 @@
             };
         }
 
-        const Block = function () {
+        const Block = function (maxSpeed) {
             this.x = c.width;
-            this.s = Math.random() * 3 + 1;
+            this.maxSpeed = maxSpeed;
+            this.s = Math.random() * maxSpeed + 1;
             this.h = Math.random() * 10 + 5;
             this.w = Math.random() * 20 + 10;
             this.y = Math.random() * (c.height - this.h);
             
             this.update = function () {
-                if (!pause) this.x -= 1;
+                if (!pause) this.x -= this.s;
                 
                 if(this.x + this.w < 0){
                     this.x = c.width;
-                    this.s = Math.random() * 3 + 1;
+                    this.s = Math.random() * this.maxSpeed + 1;
                     this.h = Math.random() * 10 + 5;
                     this.w = Math.random() * 20 + 10;
                     this.y = Math.random() * (c.height - this.h);
@@ -106,17 +120,6 @@
                 keys.right = true;
             }
 
-
-            //var audioCtx = new AudioContext();
-            //var o = audioCtx.createOscillator();
-            //o.type = "square";
-            //o.frequency.value = 161.6;
-            //var g = audioCtx.createGain();
-            //g.gain.exponentialRampToValueAtTime(0.00001, 0.2);
-            //o.connect(g);
-            //g.connect(audioCtx.destination);
-            //o.start(0);
-
             pause = false;
         }
 
@@ -142,12 +145,25 @@
             document.addEventListener('keydown', kDown);
             document.addEventListener('keyup', kUp);
 
-            b = [new Block(), new Block];
+            Menu();
+            //b = [new Block(), new Block(), new Block()];
+            //setInterval(update, 1000 / 30);
+        }
+        
+        function Menu(){
+            c.addEventListener("mouseup", canvasClicked);
+            ctx.fillRect(0,0,c.width,c.height);
+            ctx.fillStyle = "White";
+            ctx.fillText("Click to Start",120, 100);
+        }
+        
+        function canvasClicked(e){
+            b = [new Block(4), new Block(4)];
             setInterval(update, 1000 / 30);
         }
 
         function update() {
-            pause = false;
+            
             ctx.fillStyle = "Black";
             ctx.fillRect(0, 0, c.width, c.height);
             p.update();
