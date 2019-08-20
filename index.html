@@ -26,7 +26,7 @@
     <br/>
     <div id=ins>
         <h3>
-        Use left and right arrows to rotate forward and BACK-wards to avoid the blocks.
+        Use left and right arrows to rotate forward and BACK-wards to hit the blocks.
     </h3>
             </div>
     
@@ -72,7 +72,7 @@
         const Block = function (maxSpeed) {
             
             this.maxSpeed = maxSpeed;
-            this.s = Math.random() * maxSpeed + 1;
+            this.s = Math.random() * maxSpeed + 2;
             this.h = Math.random() * 20 + 10;
             this.w = Math.random() * 10 + 5;
             this.x = Math.random() * (c.width - this.w);
@@ -82,16 +82,19 @@
             
             this.update = function () {
                 if (!pause) this.y += this.s;
-                
-                if(this.y + this.h > c.height){
-                    score++;
-                    this.x = Math.random() * (c.width - this.w);
-                    this.s = Math.random() * this.maxSpeed + 1;
-                    this.h = Math.random() * 20 + 10;
-                    this.w = Math.random() * 10 + 5;
-                    this.y = 0 - this.h;
+                if(this.y - this.h > c.height){
+                    this.score(-1);
                 }
             };
+            
+            this.score = function(points){
+                score += points;
+                this.x = Math.random() * (c.width - this.w);
+                this.s = Math.random() * this.maxSpeed + 1;
+                this.h = Math.random() * 20 + 10;
+                this.w = Math.random() * 10 + 5;
+                this.y = 0 - this.h;
+            }
             
             this.draw = function () {
                 ctx.fillStyle = "Red";
@@ -196,7 +199,8 @@
                     for(var i=0; i<b.length; i++){
                 
                         if(b[i].checkCollision()){
-                            pause = true;
+                            //pause = true;
+                            b[i].score(1);
                         
                         }
                         b[i].update();
