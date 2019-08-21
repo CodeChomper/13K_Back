@@ -138,8 +138,7 @@
         }
 
         window.onload = function () {
-
-            
+            audioCtx = null;
             level = 2;
             gameState = 0
             pause = false;
@@ -157,6 +156,15 @@
         
         function canvasClicked(e){
             if(gameState ==0){
+                if(audioCtx == null){
+                    audioCtx = new AudioContext();
+                    osc = audioCtx.createOscillator();
+                    gain = audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(0);
+                    gain.gain.setTargetAtTime(0.00001, audioCtx.currentTime, 0.3);
+                }
                 startGame();
                 gameState++;
             } else if(gameState == 1){
@@ -164,6 +172,13 @@
                 //p.clockWise = !p.clockWise;
                 //pause = false;
             }
+        }
+        
+        function playNote(freq, t){
+            
+            osc.frequency.value = freq;
+            gain.gain.setTargetAtTime(0.00001, audioCtx.currentTime, t);
+            gain.gain.setTargetAtTime(1, audioCtx.currentTime, 0);
         }
         
         function startGame(){
@@ -184,6 +199,11 @@
                     ctx.fillText("Click to Start",120, 100);
                     break;
                 case 1:
+                    //Restart the level
+                    if(score <= -2){
+                        level = 2;
+                        gameState = 0;
+                    }
                     //Go up a level
                     if(score > level * 3){
                         level++;
@@ -200,6 +220,7 @@
                         if(b[i].checkCollision()){
                             //pause = true;
                             b[i].score(1);
+                            playNote(32.70, 100);
                         
                         }
                         b[i].update();
