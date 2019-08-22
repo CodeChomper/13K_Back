@@ -181,6 +181,7 @@
         }
 
         window.onload = function () {
+            
             audioCtx = null;
             level = 4;
             gameState = 0
@@ -189,6 +190,7 @@
             c.height = window.innerHeight - 120;
             c.width = c.height * 0.60
             ctx = c.getContext("2d");
+            ctx.font = "30px Courier New";
             p = new Player(c.width / 2, c.height - c.width / 2);
             keys = { left: false, right: false };
             document.addEventListener('keydown', kDown);
@@ -241,13 +243,19 @@
             }
         }
 
-        function update() {
-            switch(gameState){
-                case 0:
-                    ctx.fillStyle = "black";
+        function makeMenu(){
+            ctx.fillStyle = "black";
                     ctx.fillRect(0,0,c.width,c.height);
                     ctx.fillStyle = "White";
                     ctx.fillText("Click to Start",120, 100);
+            
+        }
+        
+        function update() {
+            switch(gameState){
+                case 0:
+                    makeMenu();
+                    
                     break;
                 case 1:
                     //Restart the level
