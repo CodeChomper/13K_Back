@@ -40,6 +40,44 @@
         function ang2Rad(ang) {
             return ang * (Math.PI / 180);
         }
+        
+        const Part = function(x,y, ticks){
+            this.x = x;
+            this.y = y;
+            this.xS = -5 + Math.random() * 7;
+            this.yS = -10 + Math.random() * 10;
+            this.lifeTime = 0;
+            
+            this.update = function(){
+                this.lifeTime++;
+                this.x += this.xS;
+                this.y += this.yS;
+                this.yS += 1;
+            };
+            
+            this.draw = function(){
+                ctx.fillStyle = 'orange';
+                ctx.fillRect(this.x, this.y, 2, 2);
+            };
+            
+        }
+        
+        const Boom = function(x,y,partCount){
+            this.x = x;
+            this.y = y;
+            this.parts = [];
+            
+            for(var i=0; i<partCount; i++){
+                this.parts.push(new Part(this.x, this.y, 30));
+            };
+            
+            this.draw = function(){
+                for(var i=0; i<this.parts.length; i++){
+                    this.parts[i].update();
+                    this.parts[i].draw();
+                }
+            }
+        }
 
         const Player = function (x, y) {
             this.x = x;
@@ -91,6 +129,7 @@
             };
             
             this.score = function(points){
+                if(points > 0) boom = new Boom(this.x, this.y, 30);
                 score += points;
                 this.x = Math.random() * (c.width - this.w);
                 this.s = Math.random() * this.maxSpeed + 1;
@@ -161,6 +200,7 @@
             badNotes = [220.0, 246.9, 138.6, 146.8, 164.8, 185.0, 207.7];
             notes = [440, 493.9, 277.2, 293.7, 329.6, 370, 415.3];
             
+            boom = new Boom(c.width/2, c.height /2, 5);
         }
         
         function canvasClicked(e){
@@ -186,7 +226,7 @@
         
         function playNote(goodNote, t){
             index = Math.floor(Math.random() * notes.length );            
-            gain.gain.value = 0.8;
+            gain.gain.value = 0.4;
             osc.frequency.value = goodNote ? notes[index] : badNotes[index];
            gain.gain.setTargetAtTime(0.00001, audioCtx.currentTime, t);
             
@@ -226,12 +266,14 @@
                     ctx.fillText("Score: " + score, 10,20);
                     p.update();
                     p.draw();
+                    boom.draw();
                     for(var i=0; i<b.length; i++){
                 
                         if(b[i].checkCollision()){
                             //pause = true;
                             b[i].score(1);
                             playNote(true, 0.25);
+                            
                         
                         }
                         b[i].update();
