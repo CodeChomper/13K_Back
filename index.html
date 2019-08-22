@@ -24,13 +24,8 @@
 
 <body>
     <br/>
-    <div id=ins>
-        <h3>
-        Use left and right arrows to rotate forward and BACK-wards to hit the blocks.
-    </h3>
-            </div>
     
-    <canvas id="canvas" width='400' height='750'/>
+    <canvas id="canvas" width='425' height='850'/>
     
     
     <script>
@@ -82,7 +77,7 @@
         const Player = function (x, y) {
             this.x = x;
             this.y = y;
-            this.g = c.width / 2 - 20;
+            this.g = c.width / 2 - 15;
             this.a = 0;
             this.s = 6;
             this.clockWise = true;
@@ -183,12 +178,12 @@
         window.onload = function () {
             
             audioCtx = null;
-            level = 4;
+            level = 2;
             gameState = 0
             pause = false;
             c = document.getElementById("canvas");
-            c.height = window.innerHeight - 120;
-            c.width = c.height * 0.60
+            //c.height = window.innerHeight - 120;
+            //c.width = c.height * 0.60
             ctx = c.getContext("2d");
             ctx.font = "30px Courier New";
             p = new Player(c.width / 2, c.height - c.width / 2);
@@ -217,6 +212,7 @@
                     osc.start(0);
                     gain.gain.value = 0.0;
                 }
+                level = 2;
                 startGame();
                 gameState++;
             } else if(gameState == 1){
@@ -245,9 +241,28 @@
 
         function makeMenu(){
             ctx.fillStyle = "black";
-                    ctx.fillRect(0,0,c.width,c.height);
-                    ctx.fillStyle = "White";
-                    ctx.fillText("Click to Start",120, 100);
+            ctx.fillRect(0,0,c.width,c.height);
+            ctx.fillStyle = "White";
+            ctx.fillText("Directions!", 115, 80);
+            ctx.fillText("Level: " + (level - 1), c.width - 150, 35);
+            ctx.font = "15px Courier New";
+            ctx.fillText("Left and Right arrows or mouse / tap to",                   20,100);
+            ctx.fillText("change the direction of the hammers! Your",
+                        20,115);
+            
+            ctx.fillText("goal is to hit the blocks to gain points.",
+                        20,130);
+            ctx.fillText("If a block passes the bottom of the screen",
+                        20,145);
+            ctx.fillText("your score will go BACKwards. If your score",
+                        20,160);
+            ctx.fillText("reaches -2 you will start BACK at level 1." ,
+                        20,175);
+            ctx.fillText("Try to get to the highest level!", 
+                        20,190);
+            
+            ctx.font = "30px Courier New";
+            ctx.fillText("Click to Start",90, c.height - 50);
             
         }
         
@@ -260,7 +275,7 @@
                 case 1:
                     //Restart the level
                     if(score <= -2){
-                        level = 2;
+                        
                         gameState = 0;
                     }
                     //Go up a level
@@ -271,7 +286,8 @@
                     ctx.fillStyle = "Black";
                     ctx.fillRect(0, 0, c.width, c.height);
                     ctx.fillStyle = "White";
-                    ctx.fillText("Score: " + score, 10,20);
+                    ctx.fillText("Score: " + score, 10,35);
+                    ctx.fillText("Level: " + (level - 1), c.width - 150, 35);
                     p.update();
                     p.draw();
                     boom.draw();
