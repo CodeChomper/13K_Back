@@ -147,12 +147,14 @@
             gameState = 0
             pause = false;
             c = document.getElementById("canvas");
+            c.height = window.innerHeight - 120;
+            c.width = c.height * 0.60
             ctx = c.getContext("2d");
             p = new Player(c.width / 2, c.height - c.width / 2);
             keys = { left: false, right: false };
             document.addEventListener('keydown', kDown);
             document.addEventListener('keyup', kUp);
-            c.addEventListener("mouseup", canvasClicked);
+            c.addEventListener("mousedown", canvasClicked);
             setInterval(update, 1000 / 30);
             
             //Notes A B C# D E F# G#
@@ -177,7 +179,7 @@
                 gameState++;
             } else if(gameState == 1){
                 // This has an issue when a block gets stuck deep under the player
-                //p.clockWise = !p.clockWise;
+                p.clockWise = !p.clockWise;
                 //pause = false;
             }
         }
