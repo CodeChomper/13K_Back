@@ -7,6 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
+        body {
+            background: url("bg.gif");
+        }
         canvas {
             padding-left: 0;
             padding-right: 0;
@@ -82,6 +85,9 @@
             this.s = 6;
             this.clockWise = true;
             this.update = function () {
+                if(Math.abs(this.s) > 0)
+                    this.s  += this.s > 0 ? -0.01 : 0.01;
+                
                 if (keys.left && !keys.right) {
                     this.clockWise = false;
                 }
@@ -156,6 +162,7 @@
         
 
         function kDown(e) {
+            p.s = 6
             if (e.code == "ArrowLeft") {
                 keys.left = true;
             }
@@ -216,6 +223,7 @@
                 startGame();
                 gameState++;
             } else if(gameState == 1){
+                p.s = 6;
                 // This has an issue when a block gets stuck deep under the player
                 p.clockWise = !p.clockWise;
                 //pause = false;
