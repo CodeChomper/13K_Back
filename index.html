@@ -117,7 +117,7 @@
             this.h = Math.random() * 20 + 10;
             this.w = Math.random() * 10 + 5;
             this.x = Math.random() * (c.width - this.w);
-            this.y = -2 * this.h * level;
+            this.y = -2 * this.h * level - (100 * this.s);
             //this.x = c.width + 2* this.w * level;
             //this.y = Math.random() * (c.height - this.h);
             
@@ -125,6 +125,8 @@
                 if (!pause) this.y += this.s;
                 if(this.y - this.h > c.height){
                     this.score(-1);
+                    hitsInARow = 0;
+                    scoreMultiplyer = 1;
                     playNote(false, 1);
                 }
             };
@@ -239,11 +241,14 @@
         }
         
         function startGame(){
-            
+            hitsInARow = 0;
+            scoreMultiplyer = 1;
             score = 0;
             b = [];
+            var mSpeed = level*1.05;
+            if(mSpeed > 6) mSpeed = 6;
             for(var i=0; i<level; i++){
-                b.push(new Block(level*1.2));
+                b.push(new Block(mSpeed));
             }
         }
 
@@ -294,16 +299,20 @@
                     ctx.fillStyle = "Black";
                     ctx.fillRect(0, 0, c.width, c.height);
                     ctx.fillStyle = "White";
-                    ctx.fillText("Score: " + score, 10,35);
-                    ctx.fillText("Level: " + (level - 1), c.width - 150, 35);
+                    ctx.fillText("Score:" + score, 10,35);
+                    ctx.fillText(scoreMultiplyer + "X", 10,70);
+                    ctx.fillText("Level:" + (level - 1), c.width - 150, 35);
                     p.update();
                     p.draw();
                     boom.draw();
                     for(var i=0; i<b.length; i++){
                 
                         if(b[i].checkCollision()){
-                            //pause = true;
-                            b[i].score(1);
+                            hitsInARow++;
+                            if(hitsInARow > scoreMultiplyer){
+                                scoreMultiplyer++;
+                            }
+                            b[i].score(1 * scoreMultiplyer);
                             playNote(true, 0.25);
                             
                         
